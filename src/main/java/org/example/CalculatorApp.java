@@ -5,6 +5,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import org.mariuszgromada.math.mxparser.Argument;
 import org.mariuszgromada.math.mxparser.Expression;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +15,10 @@ public class CalculatorApp {
     private TextField display = new TextField();
     private List<String> historyList = new ArrayList<>();
     private ListView<String> historyView = new ListView<>();
+    private ComboBox<String> fromUnitComboBox = new ComboBox<>();
+    private ComboBox<String> toUnitComboBox = new ComboBox<>();
+    private TextField fromValueTextField = new TextField();
+    private TextField toValueTextField = new TextField();
 
     public TabPane createMainPane() {
         TabPane tabPane = new TabPane();
@@ -82,10 +88,75 @@ public class CalculatorApp {
     }
 
     private VBox createUnitConversionPane() {
-        // You can expand this section with unit conversion options.
         VBox vBox = new VBox(10);
-        vBox.getChildren().add(new Label("Unit Conversion functionality goes here"));
+
+        ObservableList<String> units = FXCollections.observableArrayList("Metros", "Kilómetros", "Centímetros", "Milímetros");
+        fromUnitComboBox.setItems(units);
+        toUnitComboBox.setItems(units);
+
+        Button convertButton = new Button("Convertir");
+        convertButton.setOnAction(e -> convertUnits());
+
+        vBox.getChildren().addAll(
+                new Label("Convertir de:"), fromValueTextField, fromUnitComboBox,
+                new Label("a:"), toValueTextField, toUnitComboBox,
+                convertButton
+        );
         return vBox;
+    }
+
+    private void convertUnits() {
+        String fromUnit = fromUnitComboBox.getValue();
+        String toUnit = toUnitComboBox.getValue();
+
+        double fromValue;
+        try {
+            fromValue = Double.parseDouble(fromValueTextField.getText());
+        } catch (NumberFormatException e) {
+            toValueTextField.setText("Valor inválido");
+            return;
+        }
+
+        double conversionRate = getConversionRate(fromUnit, toUnit);
+        double toValue = fromValue * conversionRate;
+
+        toValueTextField.setText(Double.toString(toValue));
+    }
+
+    private double getConversionRate(String from, String to) {
+        if (from.equals(to)) return 1;
+
+        switch (from) {
+            case "Metros":
+                switch (to) {
+                    case "Kilómetros": return 0.001;
+                    case "Centímetros": return 100;
+                    case "Milímetros": return 1000;
+                }
+                break;
+            case "Kilómetros":
+                switch (to) {
+                    case "Metros": return 1000;
+                    case "Centímetros": return 100000;
+                    case "Milímetros": return 1000000;
+                }
+                break;
+            case "Centímetros":
+                switch (to) {
+                    case "Metros": return 0.01;
+                    case "Kilómetros": return 0.00001;
+                    case "Milímetros": return 10;
+                }
+                break;
+            case "Milímetros":
+                switch (to) {
+                    case "Metros": return 0.001;
+                    case "Kilómetros": return 0.000001;
+                    case "Centímetros": return 0.1;
+                }
+                break;
+        }
+        throw new UnsupportedOperationException("Conversión no soportada para " + from + " a " + to);
     }
 
     private void buttonPressed(String text) {
