@@ -12,9 +12,12 @@ public class Javafx extends Application {
         CalculatorApp calculator = new CalculatorApp();
         GridPane calculatorPane = calculator.createCalculatorPane();
 
-        Scene scene = new Scene(calculatorPane, 640, 480);
+        // Ajusta el tamaño de la Scene al contenido
+        Scene scene = new Scene(calculatorPane);
+
         stage.setScene(scene);
         stage.setTitle("JavaFX Calculator");
+        stage.sizeToScene();  // Ajusta el tamaño del Stage al tamaño de la Scene
         stage.show();
     }
 

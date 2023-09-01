@@ -31,10 +31,28 @@ public class CalculatorApp {
             }
         }
 
+        // Agregar botón de igual
         Button equalsBtn = new Button("=");
         equalsBtn.setPrefSize(50, 50);
         equalsBtn.setOnAction(e -> evaluateExpression());
         grid.add(equalsBtn, 3, 5);
+
+        // Agregar botón para borrar último carácter
+        Button backspaceBtn = new Button("Borrar");
+        backspaceBtn.setPrefSize(100, 50);
+        backspaceBtn.setOnAction(e -> {
+            String currentText = display.getText();
+            if (!currentText.isEmpty()) {
+                display.setText(currentText.substring(0, currentText.length() - 1));
+            }
+        });
+        grid.add(backspaceBtn, 1, 5, 2, 1); // Span 2 columns
+
+        // Agregar botón para limpiar todo
+        Button clearBtn = new Button("C");
+        clearBtn.setPrefSize(50, 50);
+        clearBtn.setOnAction(e -> display.clear());
+        grid.add(clearBtn, 0, 5);
 
         display.setPrefWidth(200);
         grid.add(display, 0, 0, 4, 1);
@@ -47,13 +65,13 @@ public class CalculatorApp {
     }
 
     private void evaluateExpression() {
-        ScriptEngineManager mgr = new ScriptEngineManager();
-        ScriptEngine engine = mgr.getEngineByName("JavaScript");
+        String expression = display.getText();
+        org.mariuszgromada.math.mxparser.Expression e = new org.mariuszgromada.math.mxparser.Expression(expression);
 
-        try {
-            Object result = engine.eval(display.getText());
-            display.setText(result.toString());
-        } catch (ScriptException e) {
+        if (e.checkSyntax()) {
+            double result = e.calculate();
+            display.setText(Double.toString(result));
+        } else {
             display.setText("Error");
         }
     }
