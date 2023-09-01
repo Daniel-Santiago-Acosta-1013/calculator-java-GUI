@@ -105,20 +105,37 @@ public class CalculatorApp {
         return vBox;
     }
 
-    // !hasta aqui modifico el codigo ----------------------------------------------------------
+    private VBox createHistoryPane() {
+        VBox vBox = new VBox(10);
+        vBox.setAlignment(Pos.CENTER);
 
-    private ListView<String> createHistoryPane() {
-        return historyView;
+        Label historyLabel = new Label("Historial de Cálculos");
+        historyLabel.setStyle("-fx-font-size: 20px;");
+
+        historyView.setPrefHeight(300); // Ajusta la altura de la vista
+        vBox.getChildren().addAll(historyLabel, historyView);
+
+        return vBox;
     }
 
     private VBox createUnitConversionPane() {
         VBox vBox = new VBox(10);
+        vBox.setAlignment(Pos.CENTER);
 
         ObservableList<String> units = FXCollections.observableArrayList("Metros", "Kilómetros", "Centímetros", "Milímetros");
         fromUnitComboBox.setItems(units);
         toUnitComboBox.setItems(units);
 
         Button convertButton = new Button("Convertir");
+        convertButton.setPrefSize(100, 40);
+        convertButton.setStyle("-fx-background-color: #4CAF50; -fx-font-size: 18px; -fx-text-fill: white;");
+
+        DropShadow shadow = new DropShadow();
+        shadow.setColor(Color.BLUE);
+        shadow.setRadius(5.0);
+        convertButton.setOnMousePressed(e -> convertButton.setEffect(shadow));
+        convertButton.setOnMouseReleased(e -> convertButton.setEffect(null));
+
         convertButton.setOnAction(e -> convertUnits());
 
         vBox.getChildren().addAll(
