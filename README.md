@@ -23,12 +23,7 @@
 
  ## Captura de pantalla
 
- [Imagen de la calculadora en acción]
-
  ![Calculadora](screenshots/screenshot.png)
-
-
- Nota: Puedes agregar una imagen de tu calculadora, solo asegúrate de incluir la ruta correcta).
 
  ## Contribuciones
 
