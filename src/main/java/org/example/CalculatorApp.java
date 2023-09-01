@@ -1,25 +1,41 @@
 package org.example;
 
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
+import org.mariuszgromada.math.mxparser.Argument;
+import org.mariuszgromada.math.mxparser.Expression;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CalculatorApp {
-
     private TextField display = new TextField();
+    private List<String> historyList = new ArrayList<>();
+    private ListView<String> historyView = new ListView<>();
 
-    public GridPane createCalculatorPane() {
+    public TabPane createMainPane() {
+        TabPane tabPane = new TabPane();
+
+        // Tabs
+        Tab calculatorTab = new Tab("Calculator", createCalculatorPane());
+        Tab historyTab = new Tab("History", createHistoryPane());
+        Tab unitConversionTab = new Tab("Unit Conversion", createUnitConversionPane());
+
+        tabPane.getTabs().addAll(calculatorTab, historyTab, unitConversionTab);
+
+        return tabPane;
+    }
+
+    private VBox createCalculatorPane() {
+        VBox vBox = new VBox(10);
         GridPane grid = new GridPane();
 
         String[][] buttons = {
                 {"7", "8", "9", "/"},
                 {"4", "5", "6", "*"},
                 {"1", "2", "3", "-"},
-                {"0", "(", ")", "+"}
+                {"0", ".", "(", "+"}
         };
 
         for (int i = 0; i < 4; i++) {
@@ -31,13 +47,13 @@ public class CalculatorApp {
             }
         }
 
-        // Agregar botón de igual
+        // Equals button
         Button equalsBtn = new Button("=");
         equalsBtn.setPrefSize(50, 50);
         equalsBtn.setOnAction(e -> evaluateExpression());
         grid.add(equalsBtn, 3, 5);
 
-        // Agregar botón para borrar último carácter
+        // Backspace button
         Button backspaceBtn = new Button("Borrar");
         backspaceBtn.setPrefSize(100, 50);
         backspaceBtn.setOnAction(e -> {
@@ -48,7 +64,7 @@ public class CalculatorApp {
         });
         grid.add(backspaceBtn, 1, 5, 2, 1); // Span 2 columns
 
-        // Agregar botón para limpiar todo
+        // Clear button
         Button clearBtn = new Button("C");
         clearBtn.setPrefSize(50, 50);
         clearBtn.setOnAction(e -> display.clear());
@@ -57,7 +73,19 @@ public class CalculatorApp {
         display.setPrefWidth(200);
         grid.add(display, 0, 0, 4, 1);
 
-        return grid;
+        vBox.getChildren().addAll(display, grid);
+        return vBox;
+    }
+
+    private ListView<String> createHistoryPane() {
+        return historyView;
+    }
+
+    private VBox createUnitConversionPane() {
+        // You can expand this section with unit conversion options.
+        VBox vBox = new VBox(10);
+        vBox.getChildren().add(new Label("Unit Conversion functionality goes here"));
+        return vBox;
     }
 
     private void buttonPressed(String text) {
@@ -66,13 +94,26 @@ public class CalculatorApp {
 
     private void evaluateExpression() {
         String expression = display.getText();
-        org.mariuszgromada.math.mxparser.Expression e = new org.mariuszgromada.math.mxparser.Expression(expression);
 
+        // Check for division by zero
+        if (expression.contains("/0")) {
+            display.setText("División por cero");
+            return;
+        }
+
+        Expression e = new Expression(expression);
         if (e.checkSyntax()) {
             double result = e.calculate();
             display.setText(Double.toString(result));
+            historyList.add(expression + " = " + result);
+            updateHistoryView();
         } else {
-            display.setText("Error");
+            display.setText("Expresión inválida");
         }
+    }
+
+    private void updateHistoryView() {
+        historyView.getItems().clear();
+        historyView.getItems().addAll(historyList);
     }
 }

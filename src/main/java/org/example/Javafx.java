@@ -3,21 +3,19 @@ package org.example;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.scene.layout.GridPane;
+import javafx.scene.control.TabPane;
 
 public class Javafx extends Application {
 
     @Override
     public void start(Stage stage) {
         CalculatorApp calculator = new CalculatorApp();
-        GridPane calculatorPane = calculator.createCalculatorPane();
+        TabPane mainPane = calculator.createMainPane();
 
-        // Ajusta el tamaño de la Scene al contenido
-        Scene scene = new Scene(calculatorPane);
-
+        // Set scene
+        Scene scene = new Scene(mainPane, 300, 400); // Adjusted dimensions
         stage.setScene(scene);
         stage.setTitle("JavaFX Calculator");
-        stage.sizeToScene();  // Ajusta el tamaño del Stage al tamaño de la Scene
         stage.show();
     }
 
